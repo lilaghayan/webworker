@@ -1,7 +1,27 @@
+import React, {useEffect} from "react";
 import logo from './logo.svg';
 import './App.css';
 
+
 function App() {
+  const worker = new Worker(new URL('./worker.js', import.meta.url));
+
+  useEffect(()=> {
+    worker.onmessage = (event) => {
+      const { data } = event;
+      console.log(`Factorial: ${data}`);
+    };
+
+    return ()=> {
+      worker.terminate();
+    }
+
+  }, []);
+
+  function callWorker(){
+    worker.postMessage(10); // Calculate factorial of 10
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -17,6 +37,7 @@ function App() {
         >
           Learn React
         </a>
+        <button onClick={callWorker}> TEST WORKER</button>
       </header>
     </div>
   );
